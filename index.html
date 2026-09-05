@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Konsep Asam Basa & Laboratorium Interaktif</title>
+    <meta name="description" content="Media pembelajaran digital interaktif konsep Asam dan Basa oleh Rafli Hutauruk.">
+    <style>
+        /* ==================================================
+           1. CSS VARIABLES & THEMING
+           ================================================== */
+        :root {
+            /* Dark Mode (Default Futuristic Theme) */
+            --bg-base: #0f172a; /* Warna latar sedikit lebih terang (Slate 900) */
+            --bg-panel: rgba(30, 41, 59, 0.85); /* Kotak lebih solid agar kontras */
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --text-main: #ffffff; /* Tulisan putih penuh agar lebih jelas */
+            --text-muted: #cbd5e1; /* Abu-abu lebih terang */
+            --border-glass: rgba(0, 217, 255, 0.4); /* Border lebih jelas */
+            --border-light: rgba(255, 255, 255, 0.2);
+            
+            /* Core Colors */
+            --cyan-neon: #00D9FF;
+            --blue-chem: #2563EB;
+            --emerald: #00F5A0;
+            --purple: #8B5CF6;
+            --pink-accent: #F72585;
+            --gold: #FFD166;
+            
+            /* Shadows & Glows */
+            --glow-cyan: 0 0 15px rgba(0, 217, 255, 0.5);
+            --glow-pink: 0 0 15px rgba(247, 37, 133, 0.5);
+            --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f0f4f8;
+            --bg-panel: rgba(255, 255, 255, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.6);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-glass: rgba(37, 99, 235, 0.3);
+            --border-light: rgba(0, 0, 0, 0.1);
+            --glow-cyan: 0 4px 15px rgba(37, 99, 235, 0.2);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        /* Reduce Motion */
+        @media (prefers-reduced-motion: reduce) {
+            :root { --transition: none; }
+            * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+        }
+        body.reduce-motion * {
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+
+        /* ==================================================
+           2. BASE STYLES & RESET
+           ================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: var(--font-main);
+            font-size: 1.1rem; /* Memperbesar ukuran teks dasar (Base font-size) */
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 10px; left: 10px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            z-index: 50;
+            pointer-events: none;
+            user-select: none;
+            letter-spacing: 1px;
+        }
+
+        /* Glassmorphism Utility */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-glass);
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        button:active { transform: scale(0.95); }
+
+        /* Typography */
+        h1, h2, h3 { font-weight: 700; line-height: 1.3; margin-bottom: 1rem; }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--cyan-neon), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ==================================================
+           3. HEADER & NAVIGATION
+           ================================================== */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--cyan-neon);
+        }
+
+        .logo-icon { width: 30px; height: 30px; fill: currentColor; }
+
+        .nav-links {
+            display: none; /* Hidden on mobile by default */
+            gap: 5px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--cyan-neon);
+            box-shadow: inset 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        /* Mobile Menu Button */
+        .menu-toggle {
+            display: block;
+            background: transparent;
+            color: var(--text-main);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+        
+        .menu-toggle svg { width: 24px; height: 24px; fill: currentColor; }
+
+        /* ==================================================
+           4. MAIN CONTENT LAYOUT
+           ================================================== */
+        main {
+            flex: 1;
+            padding-top: 100px; /* Space for header */
+            padding-bottom: 50px;
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none; /* Sections hidden by default */
+            animation: fadeIn 0.5s ease-out;
+            padding: 1rem;
+        }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================================================
+           5. SECTION 1: HOME (HERO)
+           ================================================== */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+
+        .hero h1 { font-size: 3.5rem; letter-spacing: 2px; text-transform: uppercase; }
+        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin-bottom: 3rem; }
+
+        .main-start-btn {
+            background: rgba(13, 25, 48, 0.8);
+            border: 2px solid var(--cyan-neon);
+            color: var(--cyan-neon);
+            padding: 1.5rem 3rem;
+            font-size: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--glow-cyan);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.4s ease;
+        }
+
+        .main-start-btn:hover {
+            background: var(--cyan-neon);
+            color: #000;
+            box-shadow: 0 0 30px var(--cyan-neon);
+            transform: translateY(-5px);
+        }
+
+        .main-start-btn svg { width: 40px; height: 40px; fill: currentColor; }
+
+        /* ==================================================
+           6. SECTION 2: CONCEPT MAP
+           ================================================== */
+        .map-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            position: relative;
+        }
+
+        @media (min-width: 992px) {
+            .map-layout { grid-template-columns: 1fr 400px; } /* Desktop: Map left, Panel right */
+        }
+
+        /* Controls */
+        .map-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .map-controls button {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .map-controls button:hover { border-color: var(--cyan-neon); color: var(--cyan-neon); }
+
+        /* Tree Structure */
+        .concept-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .tree-node {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            padding: 1.25rem 2rem; /* Padding lebih besar */
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+            min-width: 250px;
+            z-index: 2;
+            font-size: 1.15rem; /* Teks peta konsep lebih besar */
+            font-weight: 500;
+        }
+        
+        .tree-node:hover {
+            border-color: var(--cyan-neon);
+            box-shadow: var(--glow-cyan);
+            transform: translateY(-2px);
+        }
+
+        .tree-node.main-title {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(139, 92, 246, 0.2));
+            border-color: var(--cyan-neon);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Connecting Lines */
+        .children-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            width: 100%;
+            align-items: center;
+            overflow: hidden;
+            max-height: 0; /* Collapsed by default */
+            transition: max-height 0.5s ease-out;
+        }
+
+        .children-container.expanded { max-height: 2000px; /* Arbitrary large number */ }
+
+        .sub-nodes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            width: 90%;
+        }
+
+        .sub-node {
+            background: var(--bg-glass);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.85rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem; /* Teks sub-node lebih besar */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-node:hover, .sub-node.active {
+            background: rgba(37, 99, 235, 0.3);
+            border-color: var(--blue-chem);
+        }
+
+        .sub-node::before {
+            content: '';
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--pink-accent);
+        }
+
+        /* Material Panel */
+        .material-panel {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding: 2rem;
+            border-top: 4px solid var(--cyan-neon);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--cyan-neon) transparent;
+        }
+        
+        .material-panel::-webkit-scrollbar { width: 6px; }
+        .material-panel::-webkit-scrollbar-thumb { background: var(--cyan-neon); border-radius: 10px; }
+
+        .panel-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+        }
+
+        .panel-content h2 { color: var(--cyan-neon); border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem; font-size: 1.5rem; }
+        .panel-content p { line-height: 1.7; margin-bottom: 1rem; font-size: 1.1rem; }
+        .formula-box {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-left: 4px solid var(--purple);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .fact-box {
+            background: rgba(0, 245, 160, 0.1);
+            border: 1px solid var(--emerald);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        /* Mobile Bottom Sheet for Panel */
+        @media (max-width: 991px) {
+            .map-layout {
+                padding-bottom: 45vh; /* Memberi ruang scroll di bawah peta saat panel terbuka */
+            }
+            .material-panel {
+                position: fixed;
+                bottom: 0; left: 0; width: 100%; height: 40vh; /* Tampilan HP 40% bagian bawah */
+                z-index: 1000;
+                transform: translateY(100%);
+                transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border-radius: 24px 24px 0 0;
+                border-top: 1px solid var(--border-glass);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            }
+            .material-panel.open { transform: translateY(0); }
+            .panel-close-btn {
+                display: block;
+                position: absolute;
+                top: 15px; right: 20px;
+                background: rgba(255,255,255,0.1);
+                border: none; color: white;
+                width: 30px; height: 30px; border-radius: 50%;
+                font-weight: bold;
+            }
+            /* Visual drag handle */
+            .material-panel::before {
+                content: '';
+                position: absolute;
+                top: 10px; left: 50%;
+                transform: translateX(-50%);
+                width: 40px; height: 4px;
+                background: var(--border-light);
+                border-radius: 4px;
+            }
+        }
+        @media (min-width: 992px) { .panel-close-btn { display: none; } }
+
+        /* ==================================================
+           7. SECTION 3: VIRTUAL LAB
+           ================================================== */
+        .lab-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .lab-tabs::-webkit-scrollbar { height: 4px; }
+        .lab-tabs::-webkit-scrollbar-thumb { background: var(--border-light); }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: rgba(37, 99, 235, 0.2);
+            border-color: var(--blue-chem);
+            color: var(--cyan-neon);
+        }
+
+        .lab-content { display: none; animation: fadeIn 0.4s; }
+        .lab-content.active { display: block; }
+
+        /* UI Common for Labs */
+        .lab-area {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) { .lab-area { grid-template-columns: 300px 1fr; } }
+
+        .lab-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .control-group label { font-size: 0.9rem; color: var(--text-muted); }
+        .control-group select, .control-group input[type="range"] {
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            border-radius: 6px;
+        }
+
+        .lab-display {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px dashed var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .action-btn {
+            background: var(--blue-chem);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        .action-btn:hover { background: var(--cyan-neon); color: black; }
+
+        /* Specific Lab: Beaker */
+        .beaker {
+            width: 120px;
+            height: 160px;
+            border: 4px solid rgba(255,255,255,0.4);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .beaker::before { /* Beaker Lip */
+            content: ''; position: absolute; top: -4px; left: -10px; right: -10px; height: 8px; border: 4px solid rgba(255,255,255,0.4); border-radius: 50%;
+        }
+        .liquid {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 0%;
+            background-color: transparent;
+            transition: height 1s ease-in-out, background-color 1s ease;
+        }
+        .liquid.fill { height: 70%; }
+
+        /* Specific Lab: pH Scale */
+        .ph-scale-container { width: 100%; max-width: 600px; margin: 2rem auto; }
+        .ph-gradient {
+            height: 30px;
+            border-radius: 15px;
+            background: linear-gradient(to right, 
+                #ff0000, #ff4500, #ffa500, #ffff00, #9acd32, #32cd32, #00fa9a, 
+                #00ffff, #87ceeb, #0000ff, #8a2be2, #4b0082, #800080, #ff1493);
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .ph-marker {
+            position: absolute;
+            top: -10px; width: 4px; height: 50px;
+            background: white;
+            box-shadow: 0 0 5px black;
+            transition: left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            left: 50%; /* Default 7 */
+        }
+        .ph-numbers { display: flex; justify-content: space-between; font-size: 0.8rem; }
+        .ph-result-card { text-align: center; margin-top: 1rem; padding: 1rem; border-radius: 8px; }
+
+        /* Specific Lab: Ionization Canvas */
+        #ionization-canvas { width: 100%; height: 100%; max-width: 400px; max-height: 400px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+
+        /* Specific Lab: Titration */
+        .buret {
+            width: 20px; height: 150px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-top: none; position: relative; margin-bottom: 10px;
+        }
+        .buret-liquid { position: absolute; bottom: 0; width: 100%; height: 80%; background: rgba(255,255,255,0.2); transition: height 0.2s; }
+        .drop {
+            width: 8px; height: 12px; background: rgba(255,255,255,0.5);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            opacity: 0;
+        }
+        .drop.falling { animation: dropFall 0.5s linear; }
+        @keyframes dropFall { 0% { opacity: 1; bottom: -15px; } 100% { opacity: 0; bottom: -100px; } }
+
+        /* ==================================================
+           8. SECTION 4: QUIZ
+           ================================================== */
+        .quiz-container { max-width: 800px; margin: 0 auto; }
+        .quiz-header { display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center; }
+        .progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; flex-grow: 1; margin: 0 1rem; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--cyan-neon); width: 0%; transition: width 0.3s; }
+        
+        .question-card { padding: 2rem; text-align: center; font-size: 1.2rem; margin-bottom: 2rem; }
+        
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 600px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .option-btn {
+            padding: 1.5rem; background: var(--bg-panel); border: 2px solid var(--border-light);
+            border-radius: 12px; font-size: 1rem; color: var(--text-main);
+            transition: all 0.2s; display: flex; align-items: center; gap: 10px; text-align: left;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--cyan-neon); background: rgba(0, 217, 255, 0.1); }
+        .option-btn.correct { background: rgba(0, 245, 160, 0.2); border-color: var(--emerald); }
+        .option-btn.wrong { background: rgba(247, 37, 133, 0.2); border-color: var(--pink-accent); }
+        
+        .quiz-feedback { margin-top: 2rem; padding: 1.5rem; border-radius: 8px; display: none; }
+        .quiz-feedback.show { display: block; animation: fadeIn 0.3s; }
+
+        .result-screen { text-align: center; display: none; }
+        .score-circle {
+            width: 150px; height: 150px; border-radius: 50%;
+            border: 8px solid var(--cyan-neon);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; font-weight: bold; margin: 2rem auto;
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* ==================================================
+           9. FAB, MODALS & TOASTS
+           ================================================== */
+        .fab-container {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 15px; z-index: 100;
+        }
+        .fab {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--bg-glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light); color: var(--text-main);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: var(--shadow-glass); transition: var(--transition);
+        }
+        .fab:hover { transform: scale(1.1); background: var(--blue-chem); color: white; }
+        .fab svg { width: 24px; height: 24px; fill: currentColor; }
+
+        /* Notes Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            width: 90%; max-width: 500px; padding: 2rem; position: relative;
+        }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; color: inherit; font-size: 1.5rem; }
+        textarea#notes-area {
+            width: 100%; height: 200px; margin-top: 1rem; padding: 1rem;
+            background: rgba(0,0,0,0.2); color: var(--text-main);
+            border: 1px solid var(--border-light); border-radius: 8px; resize: none; font-family: inherit;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 1rem; justify-content: flex-end; }
+        .modal-btn { padding: 0.5rem 1rem; border-radius: 6px; background: var(--bg-panel); color: white; border: 1px solid var(--border-light); }
+        .modal-btn.primary { background: var(--blue-chem); border: none; }
+
+        /* Toast / Badge Notification */
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1001; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: rgba(23, 11, 59, 0.9); border: 1px solid var(--gold); border-radius: 50px;
+            padding: 10px 20px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 0 20px rgba(255, 209, 102, 0.3); color: white;
+            animation: slideUpFade 0.5s, fadeOut 0.5s 4.5s forwards;
+        }
+        .badge-icon { font-size: 1.5rem; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* ==================================================
+           10. FOOTER
+           ================================================== */
+        footer {
+            background: rgba(3, 7, 18, 0.9);
+            border-top: 1px solid var(--border-light);
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        .footer-content h3 { color: var(--cyan-neon); font-size: 1.2rem; }
+        .footer-content p { color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0.5rem auto; }
+        .creator-info { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* Responsive Mobile Nav */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: flex; flex-direction: column; position: absolute;
+                top: 70px; left: 0; width: 100%; background: var(--bg-base);
+                padding: 1rem; border-bottom: 1px solid var(--border-light);
+                transform: translateY(-150%); transition: transform 0.3s ease-in-out;
+                z-index: 99;
+            }
+            .nav-links.open { transform: translateY(0); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        }
+        @media (min-width: 769px) { .menu-toggle { display: none; } .nav-links { display: flex; } }
+
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- CANVAS BACKGROUND -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- WATERMARK -->
+    <div class="watermark">© Rafli Hutauruk | 4243131099</div>
+
+    <!-- HEADER -->
+    <header class="glass" style="border-radius: 0; border-left: none; border-right: none; border-top: none;">
+        <div class="nav-container">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/><circle cx="12" cy="12" r="3"/></svg>
+                Peta Konsep & Lab
+            </div>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+            <nav class="nav-links" id="nav-links">
+                <button class="nav-btn active" data-target="sec-home">Home</button>
+                <button class="nav-btn" data-target="sec-map">Peta Konsep</button>
+                <button class="nav-btn" data-target="sec-lab">Virtual Lab</button>
+                <button class="nav-btn" data-target="sec-quiz">Kuis</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- SECTION 1: HOME -->
+        <section id="sec-home" class="section active">
+            <div class="hero">
+                <h1 class="text-gradient">ASAM DAN BASA</h1>
+                <p>Jelajahi Konsep, Amati Reaksi, dan Belajar Melalui Laboratorium Virtual secara Interaktif.</p>
+                <button class="main-start-btn" onclick="navigateTo('sec-map')">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    Mulai Belajar
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CONCEPT MAP -->
+        <section id="sec-map" class="section">
+            <div class="map-controls">
+                <button id="btn-expand-all">Expand All</button>
+                <button id="btn-collapse-all">Collapse All</button>
+            </div>
+            
+            <div class="map-layout">
+                <!-- Map Area -->
+                <div class="concept-tree" id="concept-tree">
+                    <!-- Injected via JS -->
+                </div>
+
+                <!-- Material Panel -->
+                <aside class="material-panel glass" id="material-panel">
+                    <button class="panel-close-btn" id="panel-close-btn">×</button>
+                    <div class="panel-placeholder" id="panel-placeholder">
+                        <svg style="width:50px; height:50px; fill:var(--text-muted); margin-bottom:10px" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <p>Klik submateri pada Peta Konsep untuk melihat detail materi di sini.</p>
+                    </div>
+                    <div class="panel-content" id="panel-content" style="display:none;">
+                        <!-- Injected via JS -->
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VIRTUAL LAB -->
+        <section id="sec-lab" class="section">
+            <div class="lab-tabs">
+                <button class="tab-btn active" data-lab="lab-ph">Skala pH</button>
+                <button class="tab-btn" data-lab="lab-1">Identifikasi (Indikator)</button>
+                <button class="tab-btn" data-lab="lab-2">Ionisasi</button>
+                <button class="tab-btn" data-lab="lab-3">Netralisasi (Titrasi)</button>
+            </div>
+
+            <!-- Lab: pH Scale -->
+            <div id="lab-ph" class="lab-content active glass" style="padding: 2rem;">
+                <h2 style="text-align:center; color: var(--cyan-neon);">Simulator Skala pH</h2>
+                <div class="ph-scale-container">
+                    <div class="ph-gradient">
+                        <div class="ph-marker" id="ph-marker"></div>
+                    </div>
+                    <div class="ph-numbers">
+                        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span>
+                    </div>
+                </div>
+                <div class="lab-controls" style="max-width: 400px; margin: 0 auto;">
+                    <div class="control-group">
+                        <label>Pilih Zat:</label>
+                        <select id="ph-select-substance">
+                            <option value="7">Air Murni (Netral)</option>
+                            <option value="1.5">Asam Lambung</option>
+                            <option value="2.5">Cuka</option>
+                            <option value="3.5">Air Jeruk</option>
+                            <option value="5.5">Kopi Hitam</option>
+                            <option value="9.5">Larutan Sabun</option>
+                            <option value="11.5">Amonia</option>
+                            <option value="13.5">Pemutih</option>
+                            <option value="14">NaOH (Basa Kuat)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ph-result-card glass" id="ph-result">
+                    <h3>pH: <span id="ph-value">7.0</span></h3>
+                    <p id="ph-desc">Sifat: Netral</p>
+                </div>
+            </div>
+
+            <!-- Lab 1: Identifikasi -->
+            <div id="lab-1" class="lab-content glass">
+                <div class="lab-area">
+                    <div class="lab-controls border-right">
+                        <h3>Alat & Bahan</h3>
+                        <div class="control-group">
+                            <label>Larutan Uji:</label>
+                            <select id="lab1-solution">
+                                <option value="asam">HCl (Asam Kuat)</option>
+                                <option value="asam-lemah">CH₃COOH (Asam Lemah)</option>
+                                <option value="netral">Air Murni (Netral)</option>
+                                <option value="basa-lemah">NH₃ (Basa Lemah)</option>
+                                <option value="basa">NaOH (Basa Kuat)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Indikator:</label>
+                            <select id="lab1-indicator">
+                                <option value="lakmus-merah">Kertas Lakmus Merah</option>
+                                <option value="lakmus-biru">Kertas Lakmus Biru</option>
+                                <option value="pp">Fenolftalein (PP)</option>
+                                <option value="mo">Metil Jingga (MO)</option>
+                                <option value="universal">Indikator Universal</option>
+                            </select>
+                        </div>
+                        <button class="action-btn" id="btn-lab1-test">Tetesi Indikator</button>
+                        <button class="action-btn" style="background:var(--bg-panel); color:white;" id="btn-lab1-reset">Reset</button>
+                    </div>
+                    <div class="lab-display">
+                        <div class="beaker">
+                            <div class="liquid" id="lab1-liquid" style="background-color: rgba(255,255,255,0.2); height: 60%;"></div>
+                        </div>
+                        <div id="lab1-result" style="margin-top:20px; text-align:center; min-height: 50px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab 2: Ionisasi -->
+            <div id="lab-2" class="lab-content glass">
+                 <div class="lab-area">
+                    <div class="lab-controls">
+                        <h3>Simulasi Ionisasi</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Amati perbedaan jumlah molekul yang terurai menjadi ion di dalam air.</p>
+                        <div class="control-group">
+                            <label>Pilih Zat:</label>
+                            <select id="lab2-substance">
+                                <option value="strong-acid">HCl (Asam Kuat)</option>
+                                <option value="weak-acid">CH₃COOH (Asam Lemah)</option>
+                                <option value="strong-base">NaOH (Basa Kuat)</option>
+                                <option value="weak-base">NH₃ (Basa Lemah)</option>
+                            </select>
+                        </div>
+                        <button class="action-btn" id="btn-lab2-start">Mulai Ionisasi</button>
+                        <div style="margin-top: 1rem; font-size:0.9rem;">
+                            <div style="display:flex; justify-content:space-between;"><span>Molekul Utuh:</span> <span id="stat-mol">0%</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span>Terionisasi:</span> <span id="stat-ion">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="lab-display" style="background: var(--bg-base);">
+                        <canvas id="ionization-canvas" width="300" height="300"></canvas>
+                        <div id="lab2-legend" style="margin-top: 10px; display:flex; gap: 15px; font-size: 0.8rem;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab 3: Netralisasi -->
+            <div id="lab-3" class="lab-content glass">
+                 <div class="lab-area">
+                    <div class="lab-controls">
+                        <h3>Titrasi Asam Basa</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Menitrasi 50mL HCl 0.1M dengan NaOH 0.1M (Indikator PP)</p>
+                        <div class="control-group">
+                            <label>Volume NaOH ditambahkan (mL): <span id="lab3-vol-val">0</span></label>
+                            <input type="range" id="lab3-slider" min="0" max="100" value="0" step="1">
+                        </div>
+                        <div class="glass" style="padding: 1rem; margin-top: 1rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--cyan-neon);" id="lab3-ph-display">pH: 1.00</div>
+                        </div>
+                    </div>
+                    <div class="lab-display">
+                        <div class="buret">
+                            <div class="buret-liquid" id="lab3-buret-liq"></div>
+                            <div class="drop" id="lab3-drop"></div>
+                        </div>
+                        <div class="beaker" style="margin-top: 20px;">
+                            <div class="liquid fill" id="lab3-beaker-liq" style="background-color: rgba(255,255,255,0.1);"></div>
+                        </div>
+                        <div id="lab3-message" style="position:absolute; top: 10px; color: var(--emerald); font-weight:bold; font-size: 1.2rem; opacity: 0; transition: opacity 0.5s;">🎉 TITIK EKIVALEN TERCAPAI!</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: QUIZ -->
+        <section id="sec-quiz" class="section">
+            <div class="quiz-container glass" style="padding: 2rem;">
+                <div id="quiz-intro" style="text-align: center;">
+                    <h2>Uji Pemahamanmu</h2>
+                    <p>10 Soal Pilihan Ganda tentang Asam dan Basa.</p>
+                    <button class="action-btn" onclick="startQuiz()" style="padding: 1rem 3rem; font-size: 1.2rem;">Mulai Kuis</button>
+                </div>
+
+                <div id="quiz-active" style="display: none;">
+                    <div class="quiz-header">
+                        <span id="quiz-q-num" style="font-weight: bold;">Soal 1/10</span>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="quiz-progress"></div></div>
+                        <span id="quiz-score-live">Skor: 0</span>
+                    </div>
+                    
+                    <div class="question-card glass" id="quiz-question">Pertanyaan...</div>
+                    
+                    <div class="options-grid" id="quiz-options">
+                        <!-- Buttons injected via JS -->
+                    </div>
+
+                    <div class="quiz-feedback glass" id="quiz-feedback">
+                        <h4 id="feedback-title"></h4>
+                        <p id="feedback-text"></p>
+                        <button class="action-btn" id="btn-next-q" style="float: right;">Selanjutnya</button>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+
+                <div id="quiz-result" class="result-screen">
+                    <h2>Kuis Selesai!</h2>
+                    <div class="score-circle" id="final-score">100</div>
+                    <h3 id="eval-text" style="color: var(--cyan-neon);">Sangat Baik</h3>
+                    <button class="action-btn" onclick="startQuiz()" style="margin-top: 2rem;">Ulangi Kuis</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FAB BUTTONS -->
+    <div class="fab-container">
+        <button class="fab" id="btn-audio" aria-label="Toggle Audio" title="Audio">
+            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+        <button class="fab" id="btn-theme" aria-label="Toggle Theme" title="Tema Terang/Gelap">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z" opacity="0.3"/><path d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+        </button>
+        <button class="fab" id="btn-notes" aria-label="Open Notes" title="Catatan Belajar">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+    </div>
+
+    <!-- NOTES MODAL -->
+    <div class="modal-overlay" id="notes-modal">
+        <div class="modal-content glass">
+            <button class="modal-close" id="btn-close-notes">×</button>
+            <h2 style="color: var(--cyan-neon);">📒 Catatan Saya</h2>
+            <textarea id="notes-area" placeholder="Tulis catatan belajarmu di sini... (Tersimpan otomatis di browser)"></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn" id="btn-download-notes">Download (.txt)</button>
+                <button class="modal-btn" id="btn-clear-notes" style="background: rgba(247, 37, 133, 0.2); border-color: var(--pink-accent);">Hapus</button>
+                <button class="modal-btn primary" id="btn-save-notes">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER (Gamification) -->
+    <div id="toast-container"></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <h3>PETA KONSEP ASAM BASA & LABORATORIUM INTERAKTIF</h3>
+            <p>Media pembelajaran digital interaktif untuk membantu memahami konsep Asam dan Basa melalui eksplorasi materi, simulasi, dan praktikum virtual.</p>
+            <div class="creator-info">
+                <p>Dibuat oleh: <strong>Rafli Hutauruk</strong> (NIM: 4243131099)</p>
+                <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">© 2026 Rafli Hutauruk. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==================================================
+           1. DATA: CONCEPT MAP
+           ================================================== */
+        const conceptData = [
+            {
+                id: "bab1", title: "BAB 1: Pengertian Asam dan Basa",
+                subs: [
+                    { title: "Pengertian Asam", content: "<p>Asam adalah senyawa kimia yang jika dilarutkan dalam air akan menghasilkan larutan dengan pH lebih kecil dari 7.</p><p>Asam umumnya memiliki rasa masam yang khas dan bersifat korosif, yang berarti dapat merusak jaringan kulit serta material seperti logam dan marmer. Secara kimiawi, asam melepaskan ion hidrogen (H⁺) dalam larutan berair.</p>" },
+                    { title: "Pengertian Basa", content: "<p>Basa adalah senyawa kimia yang menyerap ion hidronium ketika dilarutkan dalam air, menghasilkan larutan dengan pH lebih besar dari 7.</p><p>Basa umumnya terasa pahit jika tidak sengaja terkecap, dan terasa licin seperti sabun saat menyentuh kulit (kaustik). Basa kuat sangat berbahaya dan dapat merusak jaringan organik.</p>" },
+                    { title: "Contoh Asam", content: "<p>Senyawa asam sangat mudah ditemukan dalam kehidupan sehari-hari maupun industri:<br><br>- <b>Asam Sitrat:</b> Terdapat pada buah jeruk, lemon, dan tomat.<br>- <b>Asam Asetat (Cuka):</b> Digunakan untuk bumbu masakan dan pengawet alami.<br>- <b>Asam Klorida (HCl):</b> Ditemukan sebagai asam lambung pencerna makanan, dan dalam konsentrasi tinggi digunakan sebagai cairan pembersih kerak lantai porselen.</p>" },
+                    { title: "Contoh Basa", content: "<p>Berbagai produk pembersih banyak yang memanfaatkan sifat basa:<br><br>- <b>Natrium Hidroksida (NaOH):</b> Bahan utama pembuat sabun mandi padat dan pembersih saluran pipa.<br>- <b>Amonia (NH₃):</b> Cairan pembersih kaca dan jendela.<br>- <b>Magnesium Hidroksida (Mg(OH)₂):</b> Digunakan secara medis sebagai antasida (obat maag) untuk menetralkan kelebihan asam di lambung.</p>" }
+                ]
+            },
+            {
+                id: "bab2", title: "BAB 2: Teori Asam dan Basa",
+                subs: [
+                    { title: "Teori Arrhenius", content: "<p>Menurut Svante Arrhenius (1884), definisi asam dan basa sangat bergantung pada pelarut air (H₂O):</p><ul><li><b>Asam</b> adalah zat yang melepaskan ion hidrogen (H⁺) ketika dilarutkan dalam air.</li><li><b>Basa</b> adalah zat yang melepaskan ion hidroksida (OH⁻) ketika dilarutkan dalam air.</li></ul><div class='formula-box'>Contoh Asam: HCl → H⁺ + Cl⁻<br>Contoh Basa: NaOH → Na⁺ + OH⁻</div><p>Kelemahan teori ini adalah tidak bisa menjelaskan reaksi asam basa pada pelarut selain air, atau pada bentuk gas.</p>" },
+                    { title: "Teori Brønsted-Lowry", content: "<p>Menurut J.N. Brønsted dan T.M. Lowry (1923), reaksi asam basa adalah murni reaksi serah-terima (transfer) proton (ion H⁺), terlepas dari jenis pelarutnya.</p><ul><li><b>Asam</b>: Spesies yang bertindak sebagai Donor (pemberi) proton.</li><li><b>Basa</b>: Spesies yang bertindak sebagai Akseptor (penerima) proton.</li></ul><p>Teori ini melahirkan konsep <i>Asam-Basa Konjugasi</i>, di mana sisa asam setelah melepas proton berubah wujud menjadi basa konjugasinya.</p>" },
+                    { title: "Teori Lewis", content: "<p>Menurut G.N. Lewis (1923), definisi asam-basa diperluas ke arah perpindahan partikel elektron, sehingga molekul tanpa atom Hidrogen pun bisa diklasifikasikan.</p><ul><li><b>Asam</b>: Akseptor pasangan elektron (spesies yang kekurangan elektron / orbital kosong).</li><li><b>Basa</b>: Donor pasangan elektron (spesies yang memiliki pasangan elektron bebas / PEB).</li></ul><p>Contoh utamanya adalah reaksi ikatan koordinasi antara NH₃ (Basa Lewis) dengan molekul BF₃ (Asam Lewis).</p>" }
+                ]
+            },
+            {
+                id: "bab3", title: "BAB 3: Sifat-Sifat Asam & Basa",
+                subs: [
+                    { title: "Sifat Asam", content: "<ul><li>Mempunyai rasa masam yang khas (namun jangan pernah mencicipi bahan kimia secara langsung di laboratorium).</li><li>Dapat mengubah warna kertas lakmus biru menjadi warna merah.</li><li>Merupakan cairan elektrolit yang dapat menghantarkan arus listrik dengan baik.</li><li>Dapat bereaksi kuat dengan logam aktif (seperti Seng dan Besi) untuk menghasilkan garam dan melepaskan gas hidrogen (H₂).</li><li>Bersifat sangat korosif (merusak struktur logam dan batu pualam/marmer).</li></ul>" },
+                    { title: "Sifat Basa", content: "<ul><li>Mempunyai rasa pahit.</li><li>Terasa licin (soapy) jika terkena kulit karena ia bereaksi dengan minyak alami tubuh (disebut saponifikasi).</li><li>Dapat mengubah kertas lakmus merah menjadi berwarna biru.</li><li>Juga merupakan cairan elektrolit yang bisa menghantarkan arus listrik.</li><li>Bersifat kaustik (dapat menghancurkan kulit, daging, dan jaringan organik lainnya terutama pada konsentrasi tinggi).</li></ul>" },
+                    { title: "Perbedaan Utama", content: "<table style='width:100%; border-collapse:collapse; margin-top:10px;' border='1'><tr><th style='padding:8px;'>Sifat / Parameter</th><th style='padding:8px;'>Larutan Asam</th><th style='padding:8px;'>Larutan Basa</th></tr><tr><td style='padding:8px;'>Rasa</td><td style='padding:8px;'>Masam / Kecut</td><td style='padding:8px;'>Pahit</td></tr><tr><td style='padding:8px;'>Tes Lakmus</td><td style='padding:8px;'>Menjadi Merah</td><td style='padding:8px;'>Menjadi Biru</td></tr><tr><td style='padding:8px;'>Skala pH</td><td style='padding:8px;'>< 7 (Kecil dari 7)</td><td style='padding:8px;'>> 7 (Besar dari 7)</td></tr><tr><td style='padding:8px;'>Bila disentuh</td><td style='padding:8px;'>Menyengat / Perih</td><td style='padding:8px;'>Licin berbusa</td></tr></table>" }
+                ]
+            },
+            {
+                id: "bab4", title: "BAB 4: Indikator",
+                subs: [
+                    { title: "Pengertian Indikator", content: "<p>Indikator asam basa adalah senyawa kompleks (biasanya asam atau basa organik lemah) yang dapat berubah warna secara mencolok bergantung pada rentang pH larutan di sekitarnya. Zat ini diteteskan sedikit untuk mengetahui secara visual apakah suatu larutan bersifat asam, basa, atau netral tanpa merusak atau mengubah sifat aslinya.</p>" },
+                    { title: "Kertas Lakmus", content: "<p>Indikator kertas yang paling sederhana dan paling sering dijumpai di laboratorium sekolah, diekstrak dari sejenis tumbuhan lumut kerak.</p><ul><li><b>Lingkungan Asam</b>: Lakmus merah tetap berwarna merah, sedangkan lakmus biru berubah menjadi merah.</li><li><b>Lingkungan Basa</b>: Lakmus merah berubah menjadi biru, sedangkan lakmus biru tetap berwarna biru.</li><li><b>Lingkungan Netral</b>: Warna dari kedua jenis kertas lakmus tidak mengalami perubahan sama sekali.</li></ul>" },
+                    { title: "Fenolftalein (PP)", content: "<p>Merupakan indikator sintetis cair yang sangat sering digunakan dalam proses praktikum titrasi asidimetri / alkalimetri.</p><ul><li>Rentang Trayek pH: 8.3 hingga 10.0</li><li>Lingkungan Asam atau Netral: Tetap jernih / Tidak berwarna sama sekali.</li><li>Lingkungan Basa: Menghasilkan warna Merah muda cerah (Pink) hingga Magenta tua bergantung pada seberapa pekat basa tersebut.</li></ul>" },
+                    { title: "Indikator Universal", content: "<p>Merupakan campuran presisi dari berbagai macam zat indikator tunggal yang mampu menunjukkan spektrum warna yang berbeda-beda untuk setiap nilai pH spesifik mulai dari 1 hingga 14. Alat ini sangat praktis digunakan untuk memperkirakan nilai pH secara akurat dan langsung (misalnya warna merah muda untuk pH 3, hijau tua untuk pH 8, dan biru tua pekat untuk pH 12).</p>" }
+                ]
+            },
+            {
+                id: "bab5", title: "BAB 5: Kekuatan Asam Basa",
+                subs: [
+                    { title: "Derajat Ionisasi (α)", content: "<p>Derajat ionisasi adalah nilai perbandingan antara jumlah molekul zat yang berhasil terurai menjadi ion-ion bebas dengan jumlah keseluruhan molekul zat yang mula-mula dilarutkan ke dalam air.</p><div class='formula-box'>α = (jumlah mol yang terurai) / (jumlah mol mula-mula)</div><p>Nilai α (alpha) ini selalu berkisar antara 0 (tidak mengion sama sekali) hingga bernilai 1 (mengion secara sempurna 100%).</p>" },
+                    { title: "Asam & Basa Kuat", content: "<p>Senyawa kuat adalah elektrolit yang terionisasi sempurna (sepenuhnya pecah menjadi ion-ion) ketika berada di dalam pelarut air. (Nilai α ≈ 1).</p><p><b>Contoh Asam Kuat:</b> Asam Klorida (HCl), Asam Nitrat (HNO₃), Asam Sulfat (H₂SO₄).</p><p><b>Contoh Basa Kuat:</b> Natrium Hidroksida (NaOH), Kalium Hidroksida (KOH), Barium Hidroksida (Ba(OH)₂).</p><p>Karena molekulnya memproduksi sangat banyak ion bebas, senyawa kuat ini merupakan penghantar listrik yang luar biasa baik.</p>" },
+                    { title: "Asam & Basa Lemah", content: "<p>Senyawa lemah adalah elektrolit yang hanya terionisasi sebagian kecil saja di dalam air. (Nilai 0 < α < 1). Proses pelarutannya menghasilkan suatu reaksi kesetimbangan dinamis yang bolak-balik.</p><p><b>Contoh Asam Lemah:</b> Asam Asetat / Cuka dapur (CH₃COOH), Asam Sianida (HCN).</p><p><b>Contoh Basa Lemah:</b> Larutan Amonia (NH₃), Aluminium Hidroksida (Al(OH)₃).</p>" }
+                ]
+            },
+            {
+                id: "bab6", title: "BAB 6: pH dan pOH",
+                subs: [
+                    { title: "Pengertian pH", content: "<p>pH (singkatan dari <i>power of Hydrogen</i> atau <i>potential of Hydrogen</i>) adalah derajat keasaman matematis logaritmik yang digunakan secara luas untuk menyatakan tingkat konsentrasi ion hidrogen [H⁺] dalam suatu larutan berbasis air.</p><div class='formula-box'>pH = -log[H⁺]</div><p>Semakin kecil nilai pH (semakin mendekati 0), maka larutan tersebut sifat keasamannya justru akan semakin pekat dan kuat.</p>" },
+                    { title: "Pengertian pOH", content: "<p>Sedangkan pOH adalah kebalikannya. pOH merupakan derajat kebasaan yang berfokus pada perhitungan logaritma negatif dari konsentrasi ion hidroksida bebas [OH⁻] dalam cairan.</p><div class='formula-box'>pOH = -log[OH⁻]</div><p>Meskipun jarang disebutkan secara kasual di luar laboratorium kimia, nilai pOH sangat penting fungsinya untuk mengkalkulasi seberapa kuat suatu senyawa basa.</p>" },
+                    { title: "Hubungan pH dan pOH", content: "<p>Pada kondisi standar suhu ruangan (25°C), hasil kali tetapan ionisasi air murni (Kw) akan selalu berada secara presisi di angka 10⁻¹⁴.</p><div class='formula-box'>pH + pOH = 14</div><p>Oleh karena aturan tersebut, besaran pH dan pOH selalu saling melengkapi. Sebagai contoh, jika sebuah larutan pembersih basa memiliki nilai pOH = 3, maka kita bisa langsung memastikan dan menghitung bahwa nilai ukur pH larutan tersebut adalah 14 - 3 = 11.</p>" }
+                ]
+            },
+            {
+                id: "bab7", title: "BAB 7: Reaksi Asam Basa",
+                subs: [
+                    { title: "Reaksi Netralisasi", content: "<p>Reaksi penetralan (netralisasi) adalah salah satu reaksi kimia paling fundamental yang terjadi secara langsung ketika molekul asam murni dicampurkan dengan basa. Hasil mutlak dari reaksi ini akan selalu memproduksi senyawa jenis Garam serta melepaskan Molekul Air murni.</p><div class='formula-box'>Asam + Basa → Senyawa Garam + Air</div><p>Contoh Reaksi Lengkap: HCl (Asam Klorida) + NaOH (Natrium Hidroksida) → NaCl (Garam Dapur) + H₂O (Air)</p><p>Inti mekanisme dari reaksi netralisasi ini adalah bertemunya ion H⁺ (pembawa sifat perusak asam) dengan ion OH⁻ (pembawa sifat perusak basa) untuk saling berikatan kuat dan saling menetralkan agar berubah wujud menjadi molekul air (H₂O) yang netral dan aman.</p>" },
+                    { title: "Reaksi dengan Logam", content: "<p>Senyawa asam kuat (terutama yang masuk ke dalam kelompok golongan asam mineral) dapat bereaksi dengan sangat cepat dan hebat terhadap sebagian besar logam aktif (seperti unsur Seng, Besi, maupun Magnesium) sehingga akhirnya menghasilkan senyawa turunan berupa garam logam sekaligus melepaskan buih gas Hidrogen yang sangat reaktif dan mudah terbakar ke udara bebas.</p><div class='formula-box'>Asam + Logam → Garam Logam + H₂ (gas)</div><p>Contoh Reaksi: Zn (Seng Padat) + 2HCl (Asam Klorida cair) → ZnCl₂ (Garam Seng Klorida) + H₂ (Gas Hidrogen) ↑</p><p>Sifat reaksi perusakan inilah yang menjadi landasan mengapa bahan asam dikatakan punya efek destruktif (korosif) yang buruk terhadap struktur benda logam.</p>" }
+                ]
+            },
+            {
+                id: "bab8", title: "BAB 8: Penerapan",
+                subs: [
+                    { title: "Dalam Tubuh Manusia", content: "<p><b>Asam Lambung:</b> Secara natural, organ lambung kita memang sengaja memproduksi Asam Klorida (HCl) yang sengaja membuat lingkungan lambung di perut menjadi sangat asam (berkisar pada pH 1.5 hingga 2.0). Keasaman kuat ini amat esensial fungsinya guna mengaktifkan kinerja enzim pepsin (pencerna serat protein dari makanan) dan secara bersamaan mematikan serta melelehkan patogen/bakteri berbahaya yang tak sengaja turut tertelan masuk ke perut bersama makanan.</p><p><b>Sistem Sirkulasi Darah:</b> Cairan darah manusia secara alamiah terus-menerus dipertahankan agar selalu bersifat sedikit basa (pH dijaga super ketat dan stabil di kisaran 7.35 - 7.45) oleh suatu sistem penyangga (buffer) biologis tercanggih yang sebagian besar terdiri dari komponen asam karbonat dan senyawa bikarbonat agar keseluruhan enzim vital tubuh dapat terus bekerja dengan optimal menjaga kehidupan.</p>" },
+                    { title: "Dalam Industri & Sehari-hari", content: "<p><b>Asam Sulfat (H₂SO₄):</b> Merupakan salah satu pelarut cairan zat kimia keras yang paling masif dan paling banyak diproduksi pabrik-pabrik berat di seluruh penjuru belahan dunia. Senyawa asam ekstrem ini banyak sekali difungsikan sebagai pilar utama untuk pembuatan pupuk pertanian kimia sintetik, sebagai cairan aktif pengisi air aki (baterai timbal kendaraan mobil/motor), hingga digunakan dalam proses kompleks pemurnian kilang industri tambang minyak mentah bumi.</p><p><b>Natrium Hidroksida (NaOH):</b> Sering juga dijual dan disebut sebagai soda kaustik serpihan. Ini merupakan komponen basa terpenting dalam industri pembuatan lembaran kertas yang berasal dari bubur pulp kayu, menjadi kunci utama reaksi pembuat saponifikasi industri sabun batangan cuci/mandi, dan juga sering kita temukan sebagai cairan/bubuk korosif super kuat guna keperluan menghancurkan lemak padat pembersih kerak maupun melancarkan penyumbatan parah di jaringan saluran pipa air wastafel kotor rumah tangga.</p>" }
+                ]
+            }
+        ];
+
+        /* ==================================================
+           2. DATA: QUIZ
+           ================================================== */
+        const quizData = [
+            { q: "Zat yang dalam air melepaskan ion H+ menurut Arrhenius disebut...", options: ["Asam", "Basa", "Garam", "Larutan netral"], answer: 0 },
+            { q: "Berapa nilai pH untuk larutan netral (seperti air murni) pada suhu 25°C?", options: ["0", "7", "14", "1"], answer: 1 },
+            { q: "Menurut teori Brønsted-Lowry, basa adalah...", options: ["Donor proton", "Akseptor elektron", "Akseptor proton", "Penghasil OH-"], answer: 2 },
+            { q: "Kertas lakmus biru akan berubah menjadi merah jika dicelupkan ke dalam larutan...", options: ["NaOH", "NaCl", "Amonia", "Asam klorida"], answer: 3 },
+            { q: "Jika suatu larutan memiliki pOH = 4, maka larutan tersebut bersifat...", options: ["Asam (pH 4)", "Basa (pH 10)", "Netral", "Basa (pH 4)"], answer: 1 },
+            { q: "Manakah dari berikut ini yang merupakan contoh asam lemah?", options: ["HCl", "H2SO4", "CH3COOH", "HNO3"], answer: 2 },
+            { q: "Reaksi antara asam dan basa disebut reaksi...", options: ["Ionisasi", "Oksidasi", "Netralisasi", "Hidrolisis"], answer: 2 },
+            { q: "Indikator fenolftalein (PP) dalam larutan basa kuat akan berwarna...", options: ["Tidak berwarna", "Merah muda / Magenta", "Kuning", "Biru"], answer: 1 },
+            { q: "Senyawa yang mendonorkan pasangan elektron (Teori Lewis) disebut...", options: ["Asam", "Basa", "Elektrofil", "Netral"], answer: 1 },
+            { q: "Rumus untuk menghitung pH adalah...", options: ["-log[OH-]", "-log[H+]", "14 - [H+]", "log[H+]"], answer: 1 }
+        ];
+
+        /* ==================================================
+           3. STATE MANAGEMENT & LOCAL STORAGE
+           ================================================== */
+        let appState = {
+            theme: 'dark',
+            audioEnabled: true,
+            notes: '',
+            badges: [],
+            quizCompleted: false
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('asamBasaState');
+            if (saved) {
+                appState = { ...appState, ...JSON.parse(saved) };
+            }
+            applyState();
+        }
+
+        function saveState() {
+            localStorage.setItem('asamBasaState', JSON.stringify(appState));
+        }
+
+        /* ==================================================
+           4. AUDIO SYSTEM (Web Audio API)
+           ================================================== */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx && appState.audioEnabled) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            if (!appState.audioEnabled) return;
+            initAudio();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now); // A4
+                osc.frequency.setValueAtTime(554.37, now + 0.1); // C#5
+                osc.frequency.setValueAtTime(659.25, now + 0.2); // E5
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'drop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        }
+
+        /* ==================================================
+           5. UI LOGIC & NAVIGATION
+           ================================================== */
+        function navigateTo(sectionId) {
+            playSound('click');
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            const navBtn = document.querySelector(`.nav-btn[data-target="${sectionId}"]`);
+            if(navBtn) navBtn.classList.add('active');
+
+            // Close mobile menu if open
+            document.getElementById('nav-links').classList.remove('open');
+            window.scrollTo(0,0);
+        }
+
+        // Setup Event Listeners
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => navigateTo(e.target.dataset.target));
+        });
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('nav-links').classList.toggle('open');
+            playSound('click');
+        });
+
+        // Theme Toggle
+        document.getElementById('btn-theme').addEventListener('click', () => {
+            appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+            applyState();
+            saveState();
+            playSound('click');
+        });
+
+        // Audio Toggle
+        document.getElementById('btn-audio').addEventListener('click', () => {
+            appState.audioEnabled = !appState.audioEnabled;
+            applyState();
+            saveState();
+            if(appState.audioEnabled) playSound('click');
+        });
+
+        function applyState() {
+            document.body.setAttribute('data-theme', appState.theme);
+            document.getElementById('notes-area').value = appState.notes;
+            const audioBtn = document.getElementById('btn-audio');
+            if(appState.audioEnabled) {
+                audioBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+            } else {
+                audioBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
+            }
+        }
+
+        // Notes Logic
+        const notesModal = document.getElementById('notes-modal');
+        document.getElementById('btn-notes').addEventListener('click', () => { notesModal.classList.add('active'); playSound('click'); });
+        document.getElementById('btn-close-notes').addEventListener('click', () => notesModal.classList.remove('active'));
+        
+        document.getElementById('btn-save-notes').addEventListener('click', () => {
+            appState.notes = document.getElementById('notes-area').value;
+            saveState();
+            notesModal.classList.remove('active');
+            showToast('Catatan disimpan!', '📝');
+            playSound('success');
+        });
+        
+        document.getElementById('btn-clear-notes').addEventListener('click', () => {
+            document.getElementById('notes-area').value = '';
+            playSound('error');
+        });
+
+        document.getElementById('btn-download-notes').addEventListener('click', () => {
+            const text = document.getElementById('notes-area').value;
+            if(!text) return alert("Catatan kosong.");
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Catatan_Asam_Basa.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            playSound('click');
+        });
+
+        // Gamification Toast
+        function showToast(msg, icon) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span class="badge-icon">${icon}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        function awardBadge(badgeId, badgeName, icon) {
+            if (!appState.badges.includes(badgeId)) {
+                appState.badges.push(badgeId);
+                saveState();
+                setTimeout(() => {
+                    showToast(`Lencana Baru: ${badgeName}!`, icon);
+                    playSound('success');
+                }, 1000);
+            }
+        }
+
+        /* ==================================================
+           6. CONCEPT MAP ENGINE
+           ================================================== */
+        const treeContainer = document.getElementById('concept-tree');
+        const panelContent = document.getElementById('panel-content');
+        const panelPlaceholder = document.getElementById('panel-placeholder');
+        const mobilePanel = document.getElementById('material-panel');
+
+        function buildMap() {
+            // Main Root
+            const root = document.createElement('div');
+            root.className = 'tree-node main-title';
+            root.innerText = 'ASAM DAN BASA';
+            treeContainer.appendChild(root);
+
+            conceptData.forEach(chap => {
+                const wrap = document.createElement('div');
+                wrap.style.display = 'flex'; wrap.style.flexDirection = 'column'; wrap.style.alignItems = 'center'; wrap.style.width = '100%';
+
+                const node = document.createElement('div');
+                node.className = 'tree-node';
+                node.innerText = chap.title;
+                
+                const childrenWrap = document.createElement('div');
+                childrenWrap.className = 'children-container';
+                const subNodeContainer = document.createElement('div');
+                subNodeContainer.className = 'sub-nodes';
+
+                chap.subs.forEach(sub => {
+                    const subN = document.createElement('div');
+                    subN.className = 'sub-node';
+                    subN.innerText = sub.title;
+                    subN.onclick = (e) => {
+                        e.stopPropagation();
+                        openMaterial(sub.title, sub.content);
+                        document.querySelectorAll('.sub-node').forEach(n => n.classList.remove('active'));
+                        subN.classList.add('active');
+                        playSound('click');
+                    };
+                    subNodeContainer.appendChild(subN);
+                });
+
+                childrenWrap.appendChild(subNodeContainer);
+
+                node.onclick = () => {
+                    childrenWrap.classList.toggle('expanded');
+                    playSound('click');
+                };
+
+                wrap.appendChild(node);
+                wrap.appendChild(childrenWrap);
+                treeContainer.appendChild(wrap);
+            });
+        }
+
+        function openMaterial(title, contentHTML) {
+            panelPlaceholder.style.display = 'none';
+            panelContent.style.display = 'block';
+            panelContent.innerHTML = `<h2>${title}</h2>${contentHTML}`;
+            
+            // For Mobile
+            if(window.innerWidth < 992) {
+                mobilePanel.classList.add('open');
+            }
+            awardBadge('explorer', 'Penjelajah Kimia', '🧪');
+        }
+
+        document.getElementById('panel-close-btn').addEventListener('click', () => {
+            mobilePanel.classList.remove('open');
+            playSound('click');
+        });
+
+        document.getElementById('btn-expand-all').addEventListener('click', () => {
+            document.querySelectorAll('.children-container').forEach(el => el.classList.add('expanded'));
+            playSound('click');
+        });
+        document.getElementById('btn-collapse-all').addEventListener('click', () => {
+            document.querySelectorAll('.children-container').forEach(el => el.classList.remove('expanded'));
+            playSound('click');
+        });
+
+        /* ==================================================
+           7. VIRTUAL LAB ENGINE
+           ================================================== */
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.lab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.lab).classList.add('active');
+                playSound('click');
+            });
+        });
+
+        // --- LAB: pH Scale ---
+        const phSelect = document.getElementById('ph-select-substance');
+        const phMarker = document.getElementById('ph-marker');
+        const phValueTxt = document.getElementById('ph-value');
+        const phDesc = document.getElementById('ph-desc');
+
+        phSelect.addEventListener('change', (e) => {
+            const val = parseFloat(e.target.value);
+            // calc percentage position (0-14 -> 0-100%)
+            const pos = (val / 14) * 100;
+            phMarker.style.left = `calc(${pos}% - 2px)`;
+            phValueTxt.innerText = val.toFixed(1);
+            
+            let desc = "Netral"; let color = "white";
+            if(val < 3) { desc = "Asam Kuat"; color = "#ff4500"; }
+            else if(val < 7) { desc = "Asam Lemah"; color = "#ffa500"; }
+            else if(val > 11) { desc = "Basa Kuat"; color = "#4b0082"; }
+            else if(val > 7) { desc = "Basa Lemah"; color = "#87ceeb"; }
+
+            phDesc.innerText = `Sifat: ${desc}`;
+            document.getElementById('ph-result').style.borderBottom = `4px solid ${color}`;
+            playSound('drop');
+        });
+
+        // --- LAB 1: Identifikasi ---
+        const colorsLab1 = {
+            'lakmus-merah': { asam: '#ff6b6b', 'asam-lemah': '#ff6b6b', netral: '#ff6b6b', 'basa-lemah': '#4ea8de', basa: '#4ea8de' },
+            'lakmus-biru': { asam: '#ff6b6b', 'asam-lemah': '#ff6b6b', netral: '#4ea8de', 'basa-lemah': '#4ea8de', basa: '#4ea8de' },
+            'pp': { asam: 'rgba(255,255,255,0.1)', 'asam-lemah': 'rgba(255,255,255,0.1)', netral: 'rgba(255,255,255,0.1)', 'basa-lemah': '#f72585', basa: '#d90429' },
+            'mo': { asam: '#d62828', 'asam-lemah': '#f77f00', netral: '#fcbf49', 'basa-lemah': '#fcbf49', basa: '#fcbf49' },
+            'universal': { asam: '#d62828', 'asam-lemah': '#f77f00', netral: '#2dc653', 'basa-lemah': '#48cae4', basa: '#023e8a' }
+        };
+
+        document.getElementById('btn-lab1-test').addEventListener('click', () => {
+            const sol = document.getElementById('lab1-solution').value;
+            const ind = document.getElementById('lab1-indicator').value;
+            const resColor = colorsLab1[ind][sol];
+            
+            document.getElementById('lab1-liquid').style.backgroundColor = resColor;
+            
+            const resText = document.getElementById('lab1-result');
+            resText.innerHTML = `Perubahan Warna Teramati.<br>Sifat larutan: <b>${sol.replace('-', ' ').toUpperCase()}</b>`;
+            playSound('drop');
+            awardBadge('chemist', 'Ahli Identifikasi', '🧪');
+        });
+
+        document.getElementById('btn-lab1-reset').addEventListener('click', () => {
+            document.getElementById('lab1-liquid').style.backgroundColor = 'rgba(255,255,255,0.2)';
+            document.getElementById('lab1-result').innerHTML = '';
+            playSound('click');
+        });
+
+        // --- LAB 2: Ionisasi (Canvas 2D) ---
+        const ionCanvas = document.getElementById('ionization-canvas');
+        const ctxIon = ionCanvas.getContext('2d');
+        let ionParticles = [];
+        let ionAnimId;
+
+        class Particle2D {
+            constructor(type, x, y, isMol=true) {
+                this.x = x || Math.random() * ionCanvas.width;
+                this.y = y || Math.random() * ionCanvas.height;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.type = type; // 'acid', 'base'
+                this.isMol = isMol;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > ionCanvas.width) this.vx *= -1;
+                if(this.y < 0 || this.y > ionCanvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctxIon.beginPath();
+                if(this.isMol) {
+                    ctxIon.arc(this.x, this.y, 8, 0, Math.PI*2);
+                    ctxIon.fillStyle = this.type === 'acid' ? '#ff9f1c' : '#2ec4b6';
+                    ctxIon.fill();
+                    ctxIon.fillStyle = '#fff';
+                    ctxIon.font = '10px Arial';
+                    ctxIon.fillText('M', this.x-4, this.y+3);
+                } else {
+                    // Ion + and -
+                    ctxIon.arc(this.x-5, this.y, 5, 0, Math.PI*2);
+                    ctxIon.fillStyle = this.type === 'acid' ? '#e71d36' : '#3a0ca3'; // H+ or B+
+                    ctxIon.fill();
+                    ctxIon.fillStyle = '#fff'; ctxIon.fillText('+', this.x-8, this.y+3);
+                    
+                    ctxIon.beginPath();
+                    ctxIon.arc(this.x+5, this.y, 5, 0, Math.PI*2);
+                    ctxIon.fillStyle = this.type === 'acid' ? '#8d99ae' : '#f72585'; // A- or OH-
+                    ctxIon.fill();
+                    ctxIon.fillStyle = '#fff'; ctxIon.fillText('-', this.x+3, this.y+3);
+                }
+            }
+        }
+
+        function animateIons() {
+            ctxIon.clearRect(0,0,ionCanvas.width, ionCanvas.height);
+            ionParticles.forEach(p => { p.update(); p.draw(); });
+            ionAnimId = requestAnimationFrame(animateIons);
+        }
+
+        document.getElementById('btn-lab2-start').addEventListener('click', () => {
+            const sub = document.getElementById('lab2-substance').value;
+            cancelAnimationFrame(ionAnimId);
+            ionParticles = [];
+            let type = sub.includes('acid') ? 'acid' : 'base';
+            let alpha = 0; // degree of ionization
+
+            if(sub === 'strong-acid' || sub === 'strong-base') alpha = 0.95; // 95% ionized
+            else alpha = 0.1; // 10% ionized (weak)
+
+            const total = 40;
+            const ions = Math.floor(total * alpha);
+            const mols = total - ions;
+
+            for(let i=0; i<mols; i++) ionParticles.push(new Particle2D(type, null, null, true));
+            for(let i=0; i<ions; i++) ionParticles.push(new Particle2D(type, null, null, false));
+
+            document.getElementById('stat-mol').innerText = `${Math.round((mols/total)*100)}%`;
+            document.getElementById('stat-ion').innerText = `${Math.round((ions/total)*100)}%`;
+            
+            const legend = document.getElementById('lab2-legend');
+            if(type==='acid') legend.innerHTML = `<div><span style="color:#ff9f1c">●</span> Molekul HA</div> <div><span style="color:#e71d36">●</span> Ion H⁺</div> <div><span style="color:#8d99ae">●</span> Ion A⁻</div>`;
+            else legend.innerHTML = `<div><span style="color:#2ec4b6">●</span> Molekul BOH</div> <div><span style="color:#3a0ca3">●</span> Ion B⁺</div> <div><span style="color:#f72585">●</span> Ion OH⁻</div>`;
+
+            animateIons();
+            playSound('drop');
+        });
+
+
+        // --- LAB 3: Netralisasi (Titrasi) ---
+        const lab3Slider = document.getElementById('lab3-slider');
+        const lab3VolVal = document.getElementById('lab3-vol-val');
+        const lab3PhDisplay = document.getElementById('lab3-ph-display');
+        const lab3BeakerLiq = document.getElementById('lab3-beaker-liq');
+        const lab3Drop = document.getElementById('lab3-drop');
+        const lab3Msg = document.getElementById('lab3-message');
+
+        lab3Slider.addEventListener('input', (e) => {
+            const vol = parseInt(e.target.value);
+            lab3VolVal.innerText = vol;
+            
+            // Animation Drop
+            lab3Drop.classList.remove('falling');
+            void lab3Drop.offsetWidth; // trigger reflow
+            lab3Drop.classList.add('falling');
+
+            // Simplified Titration Curve (Strong Acid + Strong Base)
+            // Initial: 50ml 0.1M HCl. Added: vol ml 0.1M NaOH
+            let pH = 1;
+            const molAcid = 50 * 0.1; // 5 mmol
+            const molBase = vol * 0.1;
+            const totalVol = 50 + vol;
+
+            if (molAcid > molBase) {
+                const sisaH = molAcid - molBase;
+                const concH = sisaH / totalVol;
+                pH = -Math.log10(concH);
+            } else if (molAcid === molBase) {
+                pH = 7;
+            } else {
+                const sisaOH = molBase - molAcid;
+                const concOH = sisaOH / totalVol;
+                const pOH = -Math.log10(concOH);
+                pH = 14 - pOH;
+            }
+
+            lab3PhDisplay.innerText = `pH: ${pH.toFixed(2)}`;
+            lab3BeakerLiq.style.height = `${60 + (vol/100)*30}%`;
+
+            // Indicator PP color (pH range 8.2 - 10)
+            if (pH < 8.2) {
+                lab3BeakerLiq.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                lab3Msg.style.opacity = 0;
+            } else if (pH > 10) {
+                lab3BeakerLiq.style.backgroundColor = 'rgba(247, 37, 133, 0.8)';
+            } else {
+                // Gradient transition roughly
+                lab3BeakerLiq.style.backgroundColor = 'rgba(247, 37, 133, 0.4)';
+                if(pH >= 7 && pH < 8) {
+                    lab3Msg.style.opacity = 1;
+                    awardBadge('master_ph', 'Master pH', '⚖️');
+                    playSound('success');
+                }
+            }
+
+            if(vol % 10 === 0) playSound('drop');
+        });
+
+
+        /* ==================================================
+           8. QUIZ ENGINE
+           ================================================== */
+        let currentQ = 0;
+        let score = 0;
+        let quizActive = false;
+
+        function startQuiz() {
+            currentQ = 0; score = 0; quizActive = true;
+            document.getElementById('quiz-intro').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-active').style.display = 'block';
+            loadQuestion();
+            playSound('click');
+        }
+
+        function loadQuestion() {
+            const qData = quizData[currentQ];
+            document.getElementById('quiz-q-num').innerText = `Soal ${currentQ + 1}/10`;
+            document.getElementById('quiz-progress').style.width = `${((currentQ)/10)*100}%`;
+            document.getElementById('quiz-score-live').innerText = `Skor: ${score*10}`;
+            document.getElementById('quiz-question').innerText = qData.q;
+            document.getElementById('quiz-feedback').classList.remove('show');
+            
+            const optGrid = document.getElementById('quiz-options');
+            optGrid.innerHTML = '';
+            
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--bg-glass); text-align:center; line-height:30px; margin-right:10px;">${String.fromCharCode(65+index)}</span> ${opt}`;
+                btn.onclick = () => checkAnswer(index, btn);
+                optGrid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx, btnEl) {
+            if(!quizActive) return;
+            const qData = quizData[currentQ];
+            const isCorrect = selectedIdx === qData.answer;
+            const allBtns = document.querySelectorAll('.option-btn');
+            
+            allBtns.forEach(b => b.disabled = true); // Disable all
+
+            if(isCorrect) {
+                btnEl.classList.add('correct');
+                score++;
+                showFeedback(true, "Tepat Sekali!");
+                playSound('success');
+            } else {
+                btnEl.classList.add('wrong');
+                allBtns[qData.answer].classList.add('correct');
+                showFeedback(false, "Kurang Tepat.");
+                playSound('error');
+            }
+        }
+
+        function showFeedback(isCorrect, title) {
+            const fb = document.getElementById('quiz-feedback');
+            fb.className = `quiz-feedback show ${isCorrect ? 'glass' : ''}`;
+            fb.style.borderLeft = `5px solid ${isCorrect ? 'var(--emerald)' : 'var(--pink-accent)'}`;
+            document.getElementById('feedback-title').innerText = title;
+            document.getElementById('feedback-title').style.color = isCorrect ? 'var(--emerald)' : 'var(--pink-accent)';
+            document.getElementById('feedback-text').innerText = "Lanjut ke pertanyaan berikutnya.";
+        }
+
+        document.getElementById('btn-next-q').addEventListener('click', () => {
+            currentQ++;
+            playSound('click');
+            if(currentQ < quizData.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        });
+
+        function finishQuiz() {
+            quizActive = false;
+            document.getElementById('quiz-active').style.display = 'none';
+            const resScreen = document.getElementById('quiz-result');
+            resScreen.style.display = 'block';
+            
+            const finalScore = score * 10;
+            document.getElementById('final-score').innerText = finalScore;
+            
+            let evalText = "Perlu Belajar Lagi";
+            if(finalScore >= 90) evalText = "Sangat Baik! 🏆";
+            else if(finalScore >= 70) evalText = "Baik! 👍";
+            else if(finalScore >= 50) evalText = "Cukup.";
+            
+            document.getElementById('eval-text').innerText = evalText;
+            
+            if(finalScore >= 80) awardBadge('scientist', 'Ilmuwan Muda', '🔬');
+        }
+
+        /* ==================================================
+           9. MAIN BACKGROUND CANVAS ENGINE
+           ================================================== */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: -1000, y: -1000 };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        class BGParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                // random colors from theme
+                const colors = ['#00D9FF', '#2563EB', '#F72585', '#8B5CF6', '#ffffff'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.isMol = Math.random() > 0.8;
+                this.symbol = Math.random() > 0.5 ? 'H⁺' : 'OH⁻';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                // Mouse interaction
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                if(distance < 100) {
+                    // move away softly
+                    this.x -= dx * 0.01;
+                    this.y -= dy * 0.01;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.globalAlpha = 0.85; /* Animasi dibuat lebih tebal agar terlihat jelas */
+                if(this.isMol) {
+                    ctx.fillStyle = this.color;
+                    ctx.font = '15px Arial'; /* Memperbesar ukuran teks partikel di latar */
+                    ctx.fillText(this.symbol, this.x, this.y);
+                } else {
+                    ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2); /* Partikel titik dibuat sedikit lebih besar */
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+        }
+
+        function initBG() {
+            particles = [];
+            // Reduce particle count on mobile for performance
+            const pCount = window.innerWidth < 768 ? 50 : 120; /* Menambah jumlah partikel sedikit agar padat */
+            for (let i = 0; i < pCount; i++) {
+                particles.push(new BGParticle());
+            }
+        }
+
+        function animateBG() {
+            requestAnimationFrame(animateBG);
+            
+            // Respect reduce motion
+            if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Connect particles
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                for(let j=i; j<particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < 120) { /* Jangkauan koneksi garis lebih jauh */
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 217, 255, ${0.4 - dist/300})`; /* Garis penghubung lebih tebal dan terang */
+                        ctx.lineWidth = 1.0; 
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        /* ==================================================
+           10. INITIALIZATION
+           ================================================== */
+        window.onload = () => {
+            loadState();
+            buildMap();
+            initBG();
+            animateBG();
+            
+            // Check system preference for reduce motion
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.body.classList.add('reduce-motion');
+            }
+        };
+
+    </script>
+</body>
+</html>
